@@ -35,7 +35,7 @@ export default async function Navbar() {
         <div
           className="relative rounded-full px-4 py-3 shadow-2xl"
           style={{
-            backgroundImage: "url('https://i.pinimg.com/1200x/1e/7c/b3/1e7cb33c9b69e2e95bce01c88ceac411.jpg')",
+            backgroundImage: "url('https://i.pinimg.com/1200x/90/88/40/908840612a991abe3cac0cc9c5458b9a.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}

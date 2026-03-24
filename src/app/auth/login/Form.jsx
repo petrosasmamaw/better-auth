@@ -62,11 +62,11 @@ export default function LoginForm() {
       <div className="mt-4 grid grid-cols-2 gap-3">
         <form action="/api/auth/sign-in/social" method="post">
           <input type="hidden" name="provider" value="google" />
-          <button type="submit" className="w-full py-2 rounded bg-white border">Google</button>
+          <button type="submit" className="w-full py-2 rounded bg-transparent border border-white text-slate-900 dark:text-white">Google</button>
         </form>
         <form action="/api/auth/sign-in/social" method="post">
           <input type="hidden" name="provider" value="github" />
-          <button type="submit" className="w-full py-2 rounded bg-white border">GitHub</button>
+          <button type="submit" className="w-full py-2 rounded bg-transparent border border-white text-slate-900 dark:text-white">GitHub</button>
         </form>
       </div>
     </div>
