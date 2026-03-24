@@ -27,16 +27,18 @@ export default function LoginForm() {
         setLoading(false);
         return;
       }
+    
       router.push("/");
     } catch (err) {
       setError(err?.message || "Network error");
     } finally {
+        await router.refresh();
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md p-8 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-xl">
+    <div className="w-full max-w-md p-8 rounded-xl bg-transparent backdrop-blur-md border border-white/10 dark:border-slate-800/40 shadow-sm">
       <h1 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100">Sign in with email</h1>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">

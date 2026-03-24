@@ -27,7 +27,7 @@ export default async function Navbar() {
   return (
     <header className="w-full py-6 "
     style={{
-            backgroundImage: "url('https://i.pinimg.com/1200x/1e/7c/b3/1e7cb33c9b69e2e95bce01c88ceac411.jpg')",
+            backgroundImage: "url('https://i.pinimg.com/1200x/17/7f/b6/177fb6426b63749fcaf9dab67789aed9.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}>
