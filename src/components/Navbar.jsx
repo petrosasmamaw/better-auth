@@ -25,9 +25,21 @@ export default async function Navbar() {
   }
 
   return (
-    <header className="w-full py-6 bg-transparent">
+    <header className="w-full py-6 "
+    style={{
+            backgroundImage: "url('https://i.pinimg.com/1200x/1e/7c/b3/1e7cb33c9b69e2e95bce01c88ceac411.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}>
       <div className="flex justify-center">
-        <div className="relative rounded-full px-4 py-3 bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-2xl">
+        <div
+          className="relative rounded-full px-4 py-3 shadow-2xl"
+          style={{
+            backgroundImage: "url('https://i.pinimg.com/1200x/1e/7c/b3/1e7cb33c9b69e2e95bce01c88ceac411.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
           <div className="flex items-center gap-4 px-4 py-2 rounded-full bg-white/6 backdrop-blur-sm border border-white/10">
             
             {/* left icon circle */}
