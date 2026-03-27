@@ -19,9 +19,9 @@ export default function Home() {
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row items-center gap-4">
-            <Link href="/lost-and-found" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-slate-900 text-white font-semibold hover:bg-slate-800">Report or Find Items</Link>
+            <Link href="/lost" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-slate-900 text-white font-semibold hover:bg-slate-800">lost items</Link>
 
-            <Link href="/about" className="inline-flex items-center justify-center px-5 py-3 rounded-full border border-gray-200 text-slate-700 dark:text-slate-300 hover:bg-gray-50">About the Service</Link>
+            <Link href="/found" className="inline-flex items-center justify-center px-5 py-3 rounded-full border border-gray-200 text-slate-700 dark:text-slate-300 hover:bg-gray-50">found items</Link>
           </div>
         </div>
       </main>
