@@ -48,19 +48,34 @@ export default async function Navbar() {
             </div>
 
             {/* centered nav buttons */}
-            <nav className="flex items-center gap-3">
-              <Link href="/" className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-shadow">
-                🏠 <span className="hidden sm:inline">Home</span>
-              </Link>
+              <nav className="flex items-center gap-3">
+                <Link href="/" className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-shadow">
+                  🏠 <span className="hidden sm:inline">Home</span>
+                </Link>
 
-              <Link href="/lost-and-found" className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white text-emerald-700 font-semibold shadow-sm">
-                🔎 <span className="hidden sm:inline">Lost &amp; Found</span>
-              </Link>
-
-              <Link href="/about" className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-shadow">
-                ℹ️ <span className="hidden sm:inline">About</span>
-              </Link>
-            </nav>
+                {session?.user ? (
+                  <>
+                    <Link href="/lost" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-emerald-700 font-semibold shadow-sm">
+                      🔻 <span className="hidden sm:inline">Lost</span>
+                    </Link>
+                    <Link href="/found" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-emerald-700 font-semibold shadow-sm">
+                      🔺 <span className="hidden sm:inline">Found</span>
+                    </Link>
+                    <Link href="/dashboard" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-shadow">
+                      📁 <span className="hidden sm:inline">Dashboard</span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/lost-and-found" className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white text-emerald-700 font-semibold shadow-sm">
+                      🔎 <span className="hidden sm:inline">Lost &amp; Found</span>
+                    </Link>
+                    <Link href="/about" className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-shadow">
+                      ℹ️ <span className="hidden sm:inline">About</span>
+                    </Link>
+                  </>
+                )}
+              </nav>
 
             {/* right: auth actions */}
             <div className="ml-4 hidden sm:flex items-center gap-3">
