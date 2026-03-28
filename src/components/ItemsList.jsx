@@ -27,10 +27,11 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
         const res = await fetch('/api/auth/get-session');
         if (res.ok && mounted) {
           const data = await res.json();
-          setUserId(data.user?.id || null);
+          setUserId(data?.user?.id || null);
         }
       } catch (err) {
         console.error('Failed to get session:', err);
+        if (mounted) setUserId(null);
       }
     })();
     return () => { mounted = false; };

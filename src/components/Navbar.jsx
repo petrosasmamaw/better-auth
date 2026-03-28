@@ -48,13 +48,7 @@ export default async function Navbar() {
                     <span>⊞</span> <span>Dashboard</span>
                   </Link>
                 </>
-              ) : (
-                <>
-                  <Link href="/lost-and-found" className="px-1.5 sm:px-3 md:px-4 py-1 sm:py-2 rounded-full text-[10px] sm:text-sm md:text-base bg-blue-900 text-white font-semibold transition-colors whitespace-nowrap flex-shrink-0">
-                    Lost &amp; Found
-                  </Link>
-                </>
-              )}
+              ) : null}
             </nav>
 
             {/* User Section */}

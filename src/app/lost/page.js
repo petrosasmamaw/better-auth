@@ -1,5 +1,6 @@
 import ItemsList from '@/components/ItemsList';
 import ItemForm from '@/components/ItemForm';
+import AuthRequiredPage from '@/components/AuthRequiredPage';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
@@ -18,6 +19,11 @@ export default async function LostPage() {
     userId = session?.user?.id || null;
   } catch (err) {
     console.error('Failed to get session:', err);
+  }
+
+  // Show auth required page if not logged in
+  if (!userId) {
+    return <AuthRequiredPage page="Lost Items" />;
   }
 
   return (
