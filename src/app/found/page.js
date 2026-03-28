@@ -21,19 +21,28 @@ export default async function FoundPage() {
   }
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-5xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Found Items</h1>
+    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-slate-50 to-slate-50 p-6 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-10">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900">Found Items</h1>
+            <span className="text-4xl">✨</span>
+          </div>
+          <p className="text-slate-600 text-lg">Items waiting for their owners</p>
         </header>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
             <ItemsList type="found" userId={userId} />
           </div>
-          <aside className="md:col-span-1 p-4 border rounded">
-            <h3 className="font-semibold mb-3">Report Found Item</h3>
-            <ItemForm defaultType="found" />
+          <aside className="lg:col-span-1">
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 sticky top-8">
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-2xl">📝</span>
+                <h2 className="text-2xl font-bold text-slate-900">Report Found Item</h2>
+              </div>
+              <ItemForm defaultType="found" />
+            </div>
           </aside>
         </section>
       </div>

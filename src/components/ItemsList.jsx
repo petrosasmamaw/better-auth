@@ -7,7 +7,7 @@ import { fetchItems } from '@/store/itemsSlice';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-export default function ItemsList({ type, category, userId: propUserId }) {
+export default function ItemsList({ type, category, userId: propUserId, gridLayout = false }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const { items, status, error } = useSelector((s) => s.items || { items: [], status: 'idle' });
@@ -89,39 +89,50 @@ export default function ItemsList({ type, category, userId: propUserId }) {
     }
   };
 
-  if (status === 'loading') return <div className="p-4 text-center">Loading items...</div>;
-  if (error) return <div className="p-4 text-center text-red-600">Error: {error}</div>;
+  if (status === 'loading') return <div className="p-8 text-center text-slate-400"><div className="inline-block animate-spin">⏳</div> Loading items...</div>;
+  if (error) return <div className="p-8 text-center text-red-500 font-medium">Error: {error}</div>;
+
+  const containerClass = gridLayout 
+    ? "grid grid-cols-1 md:grid-cols-2 gap-6" 
+    : "space-y-4";
 
   return (
-    <div className="space-y-3">
-      {items.length === 0 && <div className="text-sm text-slate-500 p-4 text-center">No items found.</div>}
+    <div className={containerClass}>
+      {items.length === 0 && <div className="text-center p-12 text-slate-400 text-sm col-span-full">No items found yet.</div>}
       {items.map((it) => (
-        <article key={it._id || it.id} className="p-4 rounded-lg border bg-white dark:bg-slate-800 flex items-start gap-4 hover:shadow-md transition">
-          <div className="w-20 h-20 rounded-md bg-slate-100 dark:bg-slate-700 flex-shrink-0 flex items-center justify-center overflow-hidden">
+        <article key={it._id || it.id} className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border border-slate-100 flex items-start gap-6">
+          <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
             {it.imageUrl ? (
               <img src={it.imageUrl} alt={it.title} className="w-full h-full object-cover" />
             ) : (
-              <div className="text-2xl">📦</div>
+              <div className="text-5xl">📦</div>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <strong className="text-slate-900 dark:text-slate-100 truncate">{it.title}</strong>
-              <span className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-700 flex-shrink-0">
-                {it.type === 'lost' ? '🔴 Lost' : '🟢 Found'}
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-slate-900 truncate">{it.title}</h3>
+                <p className="text-sm text-slate-500 mt-1">{it.category || 'General'}</p>
+              </div>
+              <span className={`text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap flex-shrink-0 ${
+                it.type === 'lost' 
+                  ? 'bg-rose-100 text-rose-700' 
+                  : 'bg-emerald-100 text-emerald-700'
+              }`}>
+                {it.type === 'lost' ? '● Lost' : '● Found'}
               </span>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">{it.description || 'No description'}</p>
-            <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
-              <span>📍 {it.location || 'Unknown location'}</span>
-              <span>•</span>
-              <span>{new Date(it.createdAt).toLocaleDateString()}</span>
+            <p className="text-sm text-slate-600 line-clamp-2 mb-4">{it.description || 'No description'}</p>
+            <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
+              <span className="flex items-center gap-1">📍 {it.location || 'Unknown location'}</span>
+              <span className="text-slate-300">•</span>
+              <span>{new Date(it.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
             </div>
             {it.userId !== userId && (
               <button
                 onClick={() => handleMessageClick(it)}
                 disabled={creatingRoom === it._id}
-                className="mt-3 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded transition"
+                className="px-4 py-2 text-sm font-medium rounded-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white transition-colors duration-200"
               >
                 {creatingRoom === it._id ? 'Opening chat...' : 'Message'}
               </button>

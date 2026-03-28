@@ -1,28 +1,15 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { signOutAction } from "@/app/actions/auth-actions";
 
 export default async function Navbar() {
-  const headersList = await headers(); // ✅ FIX
+  const headersList = await headers();
   const cookieHeader = headersList.get("cookie") || "";
 
   const session = await auth.api.getSession({
     headers: { cookie: cookieHeader },
   });
-
-  async function signOutAction(formData) {
-    "use server";
-
-    const headersList = await headers(); // ✅ FIX
-    const signOutCookie = headersList.get("cookie") || "";
-
-    await auth.api.signOut({
-      headers: { cookie: signOutCookie },
-    });
-
-    redirect("/");
-  }
 
   return (
     <header className="w-full py-1 sm:py-3 md:py-4 bg-white overflow-x-auto">

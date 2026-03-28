@@ -66,31 +66,116 @@ export default function ItemForm({ defaultType = 'lost', onCreated }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <input value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="Title" required className="px-3 py-2 border rounded" />
-        <select value={category} onChange={(e)=>setCategory(e.target.value)} className="px-3 py-2 border rounded">
-          <option>General</option>
-          <option>Electronics</option>
-          <option>Documents</option>
-          <option>Clothing</option>
-        </select>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-slate-900">Item Title</label>
+        <input 
+          value={title} 
+          onChange={(e)=>setTitle(e.target.value)} 
+          placeholder="e.g., Blue backpack" 
+          required 
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-slate-50 text-slate-900 placeholder-slate-400" 
+        />
       </div>
-      <textarea value={description} onChange={(e)=>setDescription(e.target.value)} placeholder="Description" className="w-full px-3 py-2 border rounded" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <input value={location} onChange={(e)=>setLocation(e.target.value)} placeholder="Location" className="px-3 py-2 border rounded" />
-        <select value={type} onChange={(e)=>setType(e.target.value)} className="px-3 py-2 border rounded">
-          <option value="lost">Lost</option>
-          <option value="found">Found</option>
-        </select>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-slate-900">Category</label>
+          <select 
+            value={category} 
+            onChange={(e)=>setCategory(e.target.value)} 
+            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-slate-50 text-slate-900"
+          >
+            <option>General</option>
+            <option>Electronics</option>
+            <option>Documents</option>
+            <option>Clothing</option>
+            <option>Accessories</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-slate-900">Status</label>
+          <div className="flex gap-2 h-12">
+            <button
+              type="button"
+              onClick={() => setType('lost')}
+              className={`flex-1 rounded-xl font-medium transition-all duration-200 ${
+                type === 'lost'
+                  ? 'bg-rose-500 text-white shadow-md'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              Lost
+            </button>
+            <button
+              type="button"
+              onClick={() => setType('found')}
+              className={`flex-1 rounded-xl font-medium transition-all duration-200 ${
+                type === 'found'
+                  ? 'bg-emerald-500 text-white shadow-md'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              Found
+            </button>
+          </div>
+        </div>
       </div>
-      <div>
-        <input type="file" accept="image/*" onChange={(e)=>setFile(e.target.files?.[0]||null)} />
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-slate-900">Description</label>
+        <textarea 
+          value={description} 
+          onChange={(e)=>setDescription(e.target.value)} 
+          placeholder="Describe the item details..." 
+          rows="3"
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-slate-50 text-slate-900 placeholder-slate-400 resize-none" 
+        />
       </div>
-      {error && <div className="text-red-600">{error}</div>}
-      <div>
-        <button type="submit" disabled={loading} className="px-4 py-2 rounded bg-emerald-600 text-white">{loading? 'Saving...':'Create Item'}</button>
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-slate-900">Location</label>
+        <input 
+          value={location} 
+          onChange={(e)=>setLocation(e.target.value)} 
+          placeholder="Where did you see it?" 
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-slate-50 text-slate-900 placeholder-slate-400" 
+        />
       </div>
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-slate-900">Image</label>
+        <div className="relative">
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={(e)=>setFile(e.target.files?.[0]||null)}
+            className="hidden"
+            id="file-input"
+          />
+          <label 
+            htmlFor="file-input"
+            className="block w-full px-4 py-3 border-2 border-dashed border-slate-300 rounded-xl text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 transition text-slate-600 font-medium"
+          >
+            {file ? `✓ ${file.name}` : '📷 Click to upload or drag image'}
+          </label>
+        </div>
+      </div>
+
+      {error && (
+        <div className="px-4 py-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200">
+          {error}
+        </div>
+      )}
+
+      <button 
+        type="submit" 
+        disabled={loading} 
+        className="w-full px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-semibold transition-colors duration-200 shadow-sm hover:shadow-md"
+      >
+        {loading ? '⏳ Saving...' : '✨ Create Item'}
+      </button>
     </form>
   );
 }
