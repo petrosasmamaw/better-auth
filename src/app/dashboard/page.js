@@ -45,7 +45,7 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
             <span>📦</span> My Items
           </h2>
-          <ItemsList userId={userId} gridLayout={true} />
+          <ItemsList userId={userId} gridLayout={true} isDashboard={true} />
         </section>
       </div>
     </main>

@@ -7,12 +7,13 @@ import { fetchItems } from '@/store/itemsSlice';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-export default function ItemsList({ type, category, userId: propUserId, gridLayout = false }) {
+export default function ItemsList({ type, category, userId: propUserId, gridLayout = false, isDashboard = false }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const { items, status, error } = useSelector((s) => s.items || { items: [], status: 'idle' });
   const [userId, setUserId] = useState(null);
   const [creatingRoom, setCreatingRoom] = useState(null);
+  const [togglingStatus, setTogglingStatus] = useState(null);
 
   // Get current user ID (if not provided from server)
   useEffect(() => {
@@ -90,6 +91,62 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
     }
   };
 
+  const handleToggleStatus = async (item) => {
+    if (!userId || item.userId !== userId) {
+      alert('Unauthorized: Only item creator can update status');
+      return;
+    }
+
+    setTogglingStatus(item._id);
+    try {
+      const newStatus = item.status === 'not-delivered' ? 'delivered' : 'not-delivered';
+      
+      const res = await fetch(`${API_URL}/api/items/${item._id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId,
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          userId: userId,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to update status');
+      }
+
+      // Refresh items to get the updated status
+      dispatch(fetchItems({ 
+        ...(type && { type }), 
+        ...(category && { category }),
+        ...(userId && { userId })
+      }));
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('Failed to update status: ' + err.message);
+    } finally {
+      setTogglingStatus(null);
+    }
+  };
+
+  const getStatusBadge = (itemStatus) => {
+    if (itemStatus === 'delivered') {
+      return (
+        <span className="text-xs px-2 py-1 rounded-full font-medium bg-emerald-100 text-emerald-700">
+          ✓ Delivered
+        </span>
+      );
+    }
+    return (
+      <span className="text-xs px-2 py-1 rounded-full font-medium bg-amber-100 text-amber-700">
+        ⏳ Still waiting
+      </span>
+    );
+  };
+
   if (status === 'loading') return <div className="p-8 text-center text-slate-400"><div className="inline-block animate-spin">⏳</div> Loading items...</div>;
   if (error) return <div className="p-8 text-center text-red-500 font-medium">Error: {error}</div>;
 
@@ -115,13 +172,16 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
                 <h3 className="text-lg font-semibold text-slate-900 truncate">{it.title}</h3>
                 <p className="text-sm text-slate-500 mt-1">{it.category || 'General'}</p>
               </div>
-              <span className={`text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap flex-shrink-0 ${
-                it.type === 'lost' 
-                  ? 'bg-rose-100 text-rose-700' 
-                  : 'bg-emerald-100 text-emerald-700'
-              }`}>
-                {it.type === 'lost' ? '● Lost' : '● Found'}
-              </span>
+              <div className="flex gap-2 flex-shrink-0">
+                <span className={`text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap ${
+                  it.type === 'lost' 
+                    ? 'bg-rose-100 text-rose-700' 
+                    : 'bg-emerald-100 text-emerald-700'
+                }`}>
+                  {it.type === 'lost' ? '● Lost' : '● Found'}
+                </span>
+                {getStatusBadge(it.status || 'not-delivered')}
+              </div>
             </div>
             <p className="text-sm text-slate-600 line-clamp-2 mb-4">{it.description || 'No description'}</p>
             <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
@@ -129,15 +189,29 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
               <span className="text-slate-300">•</span>
               <span>{new Date(it.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
             </div>
-            {it.userId !== userId && (
-              <button
-                onClick={() => handleMessageClick(it)}
-                disabled={creatingRoom === it._id}
-                className="px-4 py-2 text-sm font-medium rounded-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white transition-colors duration-200"
-              >
-                {creatingRoom === it._id ? 'Opening chat...' : 'Message'}
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              {isDashboard && it.userId === userId ? (
+                <button
+                  onClick={() => handleToggleStatus(it)}
+                  disabled={togglingStatus === it._id}
+                  className="px-4 py-2 text-sm font-medium rounded-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white transition-colors duration-200"
+                >
+                  {togglingStatus === it._id 
+                    ? 'Updating...' 
+                    : it.status === 'delivered' 
+                      ? 'Mark as waiting' 
+                      : 'Mark as delivered'}
+                </button>
+              ) : it.userId !== userId ? (
+                <button
+                  onClick={() => handleMessageClick(it)}
+                  disabled={creatingRoom === it._id}
+                  className="px-4 py-2 text-sm font-medium rounded-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white transition-colors duration-200"
+                >
+                  {creatingRoom === it._id ? 'Opening chat...' : 'Message'}
+                </button>
+              ) : null}
+            </div>
           </div>
         </article>
       ))}
