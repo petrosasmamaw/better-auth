@@ -1,6 +1,7 @@
 import ItemsList from '@/components/ItemsList';
 import ItemForm from '@/components/ItemForm';
 import AuthRequiredPage from '@/components/AuthRequiredPage';
+import LostFoundToggle from '@/components/LostFoundToggle';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
@@ -37,20 +38,7 @@ export default async function FoundPage() {
           <p className="text-slate-600 text-lg">Items waiting for their owners</p>
         </header>
 
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <ItemsList type="found" userId={userId} />
-          </div>
-          <aside className="lg:col-span-1">
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 sticky top-8">
-              <div className="flex items-center gap-2 mb-6">
-                <span className="text-2xl">📝</span>
-                <h2 className="text-2xl font-bold text-slate-900">Report Found Item</h2>
-              </div>
-              <ItemForm defaultType="found" />
-            </div>
-          </aside>
-        </section>
+        <LostFoundToggle type="found" userId={userId} formTitle="Report Found Item" formIcon="📝" />
       </div>
     </main>
   );
