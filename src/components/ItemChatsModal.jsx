@@ -1,51 +1,33 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
+import { fetchChatsByItem, clearSelectedItem } from '@/store/chatsSlice';
+import { closeChatModal } from '@/store/uiSlice';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
-export default function ItemChatsModal({ isOpen, onClose, itemId, userId, itemTitle }) {
+export default function ItemChatsModal({ isOpen, itemId, userId, itemTitle }) {
+  const dispatch = useDispatch();
   const router = useRouter();
-  const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [navigatingRoomId, setNavigatingRoomId] = useState(null);
 
+  // Redux selectors
+  const { selectedItemChats, loading, error } = useSelector((s) => s.chats);
+  const { chatModalOpen } = useSelector((s) => s.ui);
+
+  // Fetch chats when modal opens
   useEffect(() => {
     if (isOpen && itemId) {
-      fetchChats();
+      dispatch(fetchChatsByItem({ itemId, userId }));
     }
-  }, [isOpen, itemId]);
+  }, [isOpen, itemId, userId, dispatch]);
 
-  const fetchChats = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API_URL}/api/rooms/item/${itemId}`, {
-        headers: {
-          'x-user-id': userId,
-        },
-      });
-
-      if (!res.ok) throw new Error('Failed to fetch chats');
-      const data = await res.json();
-      setChats(data || []);
-    } catch (err) {
-      console.error('Error fetching chats:', err);
-      setError('Failed to load chats');
-    } finally {
-      setLoading(false);
-    }
+  const handleChatClick = (roomId) => {
+    router.push(`/chat/${roomId}`);
+    dispatch(closeChatModal());
   };
 
-  const handleChatClick = async (roomId) => {
-    setNavigatingRoomId(roomId);
-    try {
-      router.push(`/chat/${roomId}`);
-    } catch (err) {
-      console.error('Error navigating to chat:', err);
-      setNavigatingRoomId(null);
-    }
+  const handleClose = () => {
+    dispatch(closeChatModal());
+    dispatch(clearSelectedItem());
   };
 
   if (!isOpen) return null;
@@ -58,11 +40,11 @@ export default function ItemChatsModal({ isOpen, onClose, itemId, userId, itemTi
           <div>
             <h2 className="text-2xl font-bold text-slate-900">Chats for "{itemTitle}"</h2>
             <p className="text-sm text-slate-500 mt-1">
-              {chats.length === 0 ? 'No chats yet' : `${chats.length} chat${chats.length !== 1 ? 's' : ''}`}
+              {selectedItemChats.length === 0 ? 'No chats yet' : `${selectedItemChats.length} chat${selectedItemChats.length !== 1 ? 's' : ''}`}
             </p>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-slate-400 hover:text-slate-600 text-2xl font-bold transition-colors"
           >
             ✕
@@ -80,29 +62,27 @@ export default function ItemChatsModal({ isOpen, onClose, itemId, userId, itemTi
             <div className="text-center py-12">
               <p className="text-red-500 font-medium">{error}</p>
               <button
-                onClick={fetchChats}
+                onClick={() => dispatch(fetchChatsByItem({ itemId, userId }))}
                 className="mt-3 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
               >
                 Try Again
               </button>
             </div>
-          ) : chats.length === 0 ? (
+          ) : selectedItemChats.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-5xl mb-3">💬</div>
               <p className="text-slate-500">No chats yet for this item</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {chats.map((chat) => {
-                // Get the other user (not the item creator)
+              {selectedItemChats.map((chat) => {
                 const otherUser = chat.participants.find((p) => p !== userId);
-                
+
                 return (
                   <button
                     key={chat._id}
                     onClick={() => handleChatClick(chat._id)}
-                    disabled={navigatingRoomId === chat._id}
-                    className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
@@ -121,9 +101,7 @@ export default function ItemChatsModal({ isOpen, onClose, itemId, userId, itemTi
                           })}
                         </p>
                       </div>
-                      <span className={`text-xl ml-3 transition-transform ${navigatingRoomId === chat._id ? 'animate-spin' : ''}`}>
-                        {navigatingRoomId === chat._id ? '⏳' : '→'}
-                      </span>
+                      <span className="text-xl ml-3">→</span>
                     </div>
                   </button>
                 );
