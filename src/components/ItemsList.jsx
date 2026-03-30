@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fetchItems } from '@/store/itemsSlice';
+import ItemChatsModal from './ItemChatsModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -14,6 +15,9 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
   const [userId, setUserId] = useState(null);
   const [creatingRoom, setCreatingRoom] = useState(null);
   const [togglingStatus, setTogglingStatus] = useState(null);
+  const [selectedItemForChats, setSelectedItemForChats] = useState(null);
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [chatCounts, setChatCounts] = useState({});
 
   // Get current user ID (if not provided from server)
   useEffect(() => {
@@ -54,6 +58,41 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
       dispatch(fetchItems(params));
     }
   }, [dispatch, type, category, userId]);
+
+  // Fetch chat counts for dashboard items
+  useEffect(() => {
+    if (!isDashboard || !items || items.length === 0 || !userId) return;
+
+    let mounted = true;
+    const fetchChatCounts = async () => {
+      const counts = {};
+      
+      for (const item of items) {
+        if (item.userId === userId) {
+          try {
+            const res = await fetch(`${API_URL}/api/rooms/item/${item._id}`, {
+              headers: {
+                'x-user-id': userId,
+              },
+            });
+            if (res.ok) {
+              const data = await res.json();
+              counts[item._id] = data?.length || 0;
+            }
+          } catch (err) {
+            console.error(`Error fetching chats for item ${item._id}:`, err);
+          }
+        }
+      }
+      
+      if (mounted) {
+        setChatCounts(counts);
+      }
+    };
+
+    fetchChatCounts();
+    return () => { mounted = false; };
+  }, [isDashboard, items, userId]);
 
   const handleMessageClick = async (item) => {
     if (!userId) {
@@ -132,6 +171,15 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
     }
   };
 
+  const handleViewChats = (item) => {
+    if (!userId || item.userId !== userId) {
+      alert('Unauthorized: Only item creator can view chats');
+      return;
+    }
+    setSelectedItemForChats(item);
+    setChatModalOpen(true);
+  };
+
   const getStatusBadge = (itemStatus) => {
     if (itemStatus === 'delivered') {
       return (
@@ -155,6 +203,7 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
     : "space-y-4";
 
   return (
+    <>
     <div className={containerClass}>
       {items.length === 0 && <div className="text-center p-12 text-slate-400 text-sm col-span-full">No items found yet.</div>}
       {items.map((it) => (
@@ -191,17 +240,32 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
             </div>
             <div className="flex items-center gap-3">
               {isDashboard && it.userId === userId ? (
-                <button
-                  onClick={() => handleToggleStatus(it)}
-                  disabled={togglingStatus === it._id}
-                  className="px-4 py-2 text-sm font-medium rounded-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white transition-colors duration-200"
-                >
-                  {togglingStatus === it._id 
-                    ? 'Updating...' 
-                    : it.status === 'delivered' 
-                      ? 'Mark as waiting' 
-                      : 'Mark as delivered'}
-                </button>
+                <>
+                  <button
+                    onClick={() => handleToggleStatus(it)}
+                    disabled={togglingStatus === it._id}
+                    className="px-4 py-2 text-sm font-medium rounded-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white transition-colors duration-200"
+                  >
+                    {togglingStatus === it._id 
+                      ? 'Updating...' 
+                      : it.status === 'delivered' 
+                        ? 'Mark as waiting' 
+                        : 'Mark as delivered'}
+                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={() => handleViewChats(it)}
+                      className="px-4 py-2 text-sm font-medium rounded-full bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-200 flex items-center gap-2"
+                    >
+                      💬 View Chats
+                    </button>
+                    {chatCounts[it._id] > 0 && (
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-600 rounded-full">
+                        {chatCounts[it._id]}
+                      </span>
+                    )}
+                  </div>
+                </>
               ) : it.userId !== userId ? (
                 <button
                   onClick={() => handleMessageClick(it)}
@@ -216,5 +280,19 @@ export default function ItemsList({ type, category, userId: propUserId, gridLayo
         </article>
       ))}
     </div>
+    {selectedItemForChats && (
+      <ItemChatsModal
+        isOpen={chatModalOpen}
+        onClose={() => {
+          setChatModalOpen(false);
+          setSelectedItemForChats(null);
+        }}
+        itemId={selectedItemForChats._id}
+        userId={userId}
+        itemTitle={selectedItemForChats.title}
+      />
+    )}
+    </>
   );
 }
+
