@@ -3,14 +3,40 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "../generated/prisma/client";
 import { nextCookies } from "better-auth/next-js";
+import { sendVerificationEmail, sendPasswordResetEmail } from "./email";
+import { getVerificationEmailTemplate, getPasswordResetEmailTemplate } from "./emailTemplates";
 
 const prisma = new PrismaClient();
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "postgresql" }),
-
+    secret: process.env.BETTER_AUTH_SECRET,
+    baseURL: process.env.BETTER_AUTH_URL,
+    
     emailAndPassword: {
         enabled: true,
+        requireEmailVerification: true,
+        sendResetPassword: async ({ user, url }) => {
+            const html = getPasswordResetEmailTemplate(user.name || user.email, url);
+            void sendPasswordResetEmail({
+                to: user.email,
+                subject: "Reset your password",
+                html,
+            });
+        },
+    },
+
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }, request) => {
+            const html = getVerificationEmailTemplate(user.name || user.email, url);
+            console.log("📧 Sending verification email to:", user.email);
+            void sendVerificationEmail({
+                to: user.email,
+                subject: "Verify your email address",
+                html,
+            });
+        },
+        sendOnSignUp: true,
     },
 
     socialProviders: {
@@ -23,5 +49,5 @@ export const auth = betterAuth({
             clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
         }
     },
-    plugins: [nextCookies()]
+    plugins: [nextCookies()],
 });
