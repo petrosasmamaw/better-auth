@@ -35,7 +35,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between mb-2">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900">My Dashboard</h1>
-              {userName && <p className="text-slate-600 text-lg mt-2">Welcome back, <span className="font-semibold text-slate-900">{userName}</span></p>}
+              {userName && <p className="text-slate-600 text-lg mt-2">Welcome back ! <span className="font-semibold text-slate-900">{userName}</span></p>}
             </div>
             <span className="text-4xl">📊</span>
           </div>
