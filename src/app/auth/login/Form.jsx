@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/authClient";
+import ForgotPasswordModal from "@/components/ForgotPasswordModal";
 
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState(null);
   const [error, setError] = useState(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,6 +79,19 @@ export default function LoginForm() {
           <span className="text-sm text-slate-700 dark:text-slate-300">Password</span>
           <input name="password" type="password" required className="mt-1 block w-full rounded-md border px-3 py-2 dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
         </label>
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" className="rounded" />
+            <span className="text-slate-700 dark:text-slate-300">Remember me</span>
+          </label>
+          <button 
+            type="button"
+            onClick={() => setShowForgotPassword(true)}
+            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+          >
+            Forgot password?
+          </button>
+        </div>
         <button type="submit" disabled={loading} className="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-medium transition-colors">
           {loading ? 'Signing in...' : 'Get Started'}
         </button>
@@ -104,6 +119,11 @@ export default function LoginForm() {
           <span className="text-lg">🐙</span> {socialLoading === "github" ? "..." : "GitHub"}
         </button>
       </div>
+
+      <ForgotPasswordModal 
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   );
 }

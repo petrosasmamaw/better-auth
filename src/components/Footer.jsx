@@ -4,8 +4,31 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="mt-20 bg-gradient-to-b from-slate-50 to-blue-50 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-16">
+    <>
+      <style>{`
+        @keyframes gradientBorder {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+        .animated-gradient-border {
+          background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe, #00f2fe, #667eea);
+          background-size: 200% 200%;
+          animation: gradientBorder 4s ease infinite;
+        }
+      `}</style>
+      
+      {/* Animated gradient border */}
+      <div className="animated-gradient-border h-1 w-full"></div>
+      
+      <footer className="bg-gradient-to-b from-slate-50 to-blue-50 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           
@@ -89,9 +112,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
-      {/* Top accent bar */}
-      <div className="h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
-    </footer>
+      </footer>
+    </>
   );
 }
