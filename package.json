@@ -6,9 +6,10 @@
     "dev": "set NEXT_DISABLE_TURBOPACK=1 && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
+    "lint": "eslint",
+    "postinstall": "prisma generate"
+    },
+  "dependencies": {   
     "@prisma/client": "^6.19.2",
     "@reduxjs/toolkit": "^2.11.2",
     "better-auth": "^1.5.6",
