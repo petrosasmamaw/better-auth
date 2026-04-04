@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/authClient";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -98,14 +100,14 @@ export default function RegisterForm() {
           disabled={socialLoading !== null}
           className="w-full py-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          <span className="text-lg">🔍</span> {socialLoading === "google" ? "..." : "Google"}
+          <FcGoogle size={20} /> {socialLoading === "google" ? "..." : "Google"}
         </button>
         <button 
           onClick={handleGitHubLogin}
           disabled={socialLoading !== null}
           className="w-full py-2.5 rounded-lg bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 dark:hover:bg-slate-600 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          <span className="text-lg">🐙</span> {socialLoading === "github" ? "..." : "GitHub"}
+          <FaGithub size={20} /> {socialLoading === "github" ? "..." : "GitHub"}
         </button>
       </div>
     </div>
